@@ -1,26 +1,53 @@
+import pytest
 from app.main import get_human_age
 
 
-def test_should_return_0_for_cat_14_dog_14() -> None:
-    result = get_human_age(14, 14)
-    assert result == [0, 0]
+@pytest.mark.parametrize(
+    "cat_age, dog_age, expected",
+    [
+        (-1, -1, [0, 0]),
+        (0, 0, [0, 0]),
+        (14, 14, [0, 0]),
+        (15, 15, [1, 1]),
+        (23, 23, [1, 1]),
+        (24, 24, [2, 2]),
+        (27, 27, [2, 2]),
+        (28, 28, [3, 2]),
+        (100, 100, [21, 17]),
+    ],
+    ids=[
+        "cat-1_dog-1 -> 0_0",
+        "cat0_dog0 -> 0_0",
+        "cat14_dog14 -> 0_0",
+        "cat15_dog15 -> 1_1",
+        "cat23_dog23 -> 1_1",
+        "cat24_dog24 -> 2_2",
+        "cat27_dog27 -> 2_2",
+        "cat28_dog28 -> 3_2",
+        "cat100_dog100 -> 21_17",
+    ]
+)
+def test_get_human_age(cat_age: int, dog_age: int, expected: list) -> None:
+    assert get_human_age(cat_age, dog_age) == expected
 
 
-def test_should_return_1_for_cat_15_dog_15() -> None:
-    result = get_human_age(15, 15)
-    assert result == [1, 1]
-
-
-def test_should_return_2_for_cat_24_dog_24() -> None:
-    result = get_human_age(24, 24)
-    assert result == [2, 2]
-
-
-def test_should_return_3_cat_2dog_for_cat_28_dog_28() -> None:
-    result = get_human_age(28, 28)
-    assert result == [3, 2]
-
-
-def test_should_return_3_cat_2dog_for_cat_100_dog_100() -> None:
-    result = get_human_age(100, 100)
-    assert result == [21, 17]
+@pytest.mark.parametrize(
+    "cat_age, dog_age",
+    [
+        ("cat", "dog"),
+        (None, None),
+        ([], {}),
+        (10, "dog"),
+        ("cat", 10),
+    ],
+    ids=[
+        "strings",
+        "none_values",
+        "wrong_collections",
+        "dog_invalid",
+        "cat_invalid",
+    ]
+)
+def test_get_human_age_invalid_types(cat_age: int, dog_age: int) -> None:
+    with pytest.raises(TypeError):
+        get_human_age(cat_age, dog_age)
